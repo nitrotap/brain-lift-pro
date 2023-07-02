@@ -3,6 +3,7 @@ import { AnswerDataService } from '../services/answer-data.service';
 import { TaskDataService } from '../services/task-data.service';
 import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { Preferences } from '@capacitor/preferences';
 
 @Component({
     selector: 'app-quiz',
@@ -17,7 +18,7 @@ export class QuizPage implements OnInit {
     taskTime: any;
 
     handleChange(ev: any) {
-        this.taskID = this.tasks[ev.target.value].taskID;
+        this.taskID = this.tasks[ev.target.value].taskName;
         this.taskName = this.tasks[ev.target.value].taskName;
     }
 
@@ -26,6 +27,61 @@ export class QuizPage implements OnInit {
             console.log(response);
             this.tasks = response;
         });
+    }
+
+    async getLocalTasks() {
+
+        const response = await Preferences.get({ key: 'task_table' });
+        const table: any = response.value;
+        let tableData = JSON.parse(table);
+        console.log(tableData)
+        this.tasks = tableData;
+
+    }
+
+    async saveLocalQuiz() {
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const hours = String(currentDate.getHours()).padStart(2, '0');
+        const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+        const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+        this.formData = {
+            taskAnswer_1: this.questions[0].answer,
+            taskAnswer_2: this.questions[1].answer,
+            taskAnswer_3: this.questions[2].answer,
+            taskAnswer_4: this.questions[3].answer,
+            taskAnswer_5: this.questions[4].answer,
+            taskAnswer_6: this.questions[5].answer,
+            taskScore: this.questions.reduce((total, question) => total + question.answer, 0),
+            dateTaken: `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`,
+            taskID: this.taskID,
+        };
+
+        const response = await Preferences.get({ key: 'answer_table' });
+        const table: any = response.value;
+        let tableData = JSON.parse(table);
+
+        if (!tableData) {
+            tableData = [];
+        }
+
+        let obj = tableData;
+        obj.push(this.formData)
+        let savedValue = JSON.stringify(obj)
+
+        const data = await Preferences.set({
+            key: 'answer_table',
+            value: savedValue
+        })
+
+        this.router.navigateByUrl('/results');
+
+
+
+
 
 
     }
@@ -123,20 +179,22 @@ export class QuizPage implements OnInit {
     }
 
     async ionViewDidEnter() {
-        if (sessionStorage.getItem('sessionID') && sessionStorage.getItem('access') === 'true' && sessionStorage.getItem('userID')) {
-            this.getTasks()
-        } else {
-            const alert = this.toastController.create({
-                message: 'Not Logged In - Unable to take a quiz.',
-                duration: 2000,
-                position: 'bottom',
-                color: 'danger'
-            });
-            await (await alert).present();
+        this.getLocalTasks();
 
-            await this.router.navigateByUrl('/login')
+        // if (sessionStorage.getItem('sessionID') && sessionStorage.getItem('access') === 'true' && sessionStorage.getItem('userID')) {
+        //     this.getTasks()
+        // } else {
+        //     const alert = this.toastController.create({
+        //         message: 'Not Logged In - Unable to take a quiz.',
+        //         duration: 2000,
+        //         position: 'bottom',
+        //         color: 'danger'
+        //     });
+        //     await (await alert).present();
 
-        }
+        //     await this.router.navigateByUrl('/login')
+
+        // }
     }
 
 }

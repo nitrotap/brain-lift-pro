@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TaskDataService } from '../services/task-data.service';
 
-TaskDataService
+import { Preferences } from '@capacitor/preferences';
+
 import { AnswerDataService } from '../services/answer-data.service';
 import { ToastController } from '@ionic/angular';
 
@@ -16,7 +17,7 @@ export class ResultsPage implements OnInit {
     answerResults: any;
 
 
-    getResultsForTask(taskID: number): any[] {
+    getResultsForTask(taskID: any): any[] {
         return this.answerResults ? this.answerResults.filter((result: any) => result.taskID === taskID) : [];
     }
 
@@ -184,23 +185,99 @@ export class ResultsPage implements OnInit {
     ngOnInit() {
     }
 
-    async ionViewDidEnter() {
-        if (sessionStorage.getItem('sessionID') && sessionStorage.getItem('access') === 'true' && sessionStorage.getItem('userID')) {
-            this.getTaskData();
-            this.getAnswerData();
-
-        } else {
-            const alert = this.toastController.create({
-                message: 'Not Logged In - Unable to view results.',
-                duration: 2000,
-                position: 'bottom',
-                color: 'danger'
-            });
-            await (await alert).present();
-
-            await this.router.navigateByUrl('/login')
-
+    async deleteLocalResult(result: any) {
+        console.log('Deleting result: ', result);
+        const formData = {
+            "taskID": result.taskID
         }
+
+        console.log(result.dateTaken)
+        console.log(this.answerResults)
+
+        this.answerResults = this.answerResults.filter((answer: any) => answer.dateTaken !== result.dateTaken)
+
+        console.log(this.answerResults)
+        let answerObj = this.answerResults
+        let savedAnswers = JSON.stringify(answerObj)
+        let answerData = await Preferences.set({
+            key: 'answer_table',
+            value: savedAnswers
+        })
+
+
+    }
+
+    async getLocalTasks() {
+        const response = await Preferences.get({ key: 'task_table' });
+        const table: any = response.value;
+        let tableData = JSON.parse(table);
+        console.log(tableData)
+        this.results = tableData;
+    }
+
+    async getLocalAnswers() {
+        const response = await Preferences.get({ key: 'answer_table' });
+        const table: any = response.value;
+        let tableData = JSON.parse(table);
+        console.log(tableData)
+        this.answerResults = tableData;
+
+    }
+
+    async deleteLocalTask(task: any) {
+        console.log('Deleting task: ', task);
+        const formData = {
+            "taskID": task.taskID
+        }
+
+        this.results = this.results.filter((result: any) => task.taskID !== result.taskID)
+
+        console.log(this.results)
+
+        let obj = this.results;
+        let savedValue = JSON.stringify(obj)
+
+        const data = await Preferences.set({
+            key: 'task_table',
+            value: savedValue
+        })
+
+        this.answerResults = this.answerResults.filter((result: any) => task.taskID !== result.taskID)
+
+        console.log(this.answerResults)
+        let answerObj = this.answerResults
+        let savedAnswers = JSON.stringify(answerObj)
+        let answerData = await Preferences.set({
+            key: 'answer_table',
+            value: savedAnswers
+        })
+
+
+    }
+
+    async ionViewDidEnter() {
+        this.getLocalTasks();
+        this.getLocalAnswers();
+
+
+
+
+        // if (sessionStorage.getItem('sessionID') && sessionStorage.getItem('access') === 'true' && sessionStorage.getItem('userID')) {
+        //     this.getTaskData();
+        //     this.getAnswerData();
+
+        // } else {
+        //     const alert = this.toastController.create({
+        //         message: 'Not Logged In - Unable to view results.',
+        //         duration: 2000,
+        //         position: 'bottom',
+        //         color: 'danger'
+        //     });
+        //     await (await alert).present();
+
+        //     await this.router.navigateByUrl('/login')
+
+        // }
 
 
     }

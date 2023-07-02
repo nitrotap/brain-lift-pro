@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
+import { Preferences } from '@capacitor/preferences';
 
 
 @Injectable({
@@ -12,10 +13,6 @@ export class TaskDataService {
   private url = 'https://www.brain-lift.org/brain-lift/server/api/task/';
 
   constructor(private http: HttpClient) { }
-
-  getData(): Observable<any> {
-    return this.http.get(this.url);
-  }
 
   getTaskData(): Observable<any> {
     const url = 'https://www.brain-lift.org/brain-lift/server/api/task/get/';
