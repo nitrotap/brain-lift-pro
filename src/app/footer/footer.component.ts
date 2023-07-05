@@ -3,16 +3,16 @@ import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-footer',
-  templateUrl: './footer.page.html',
-  styleUrls: ['./footer.page.scss'],
+  templateUrl: './footer.component.html',
+  styleUrls: ['./footer.component.scss'],
   standalone: true,
   imports: [IonicModule]
+
 })
-export class FooterPage implements OnInit {
+export class FooterComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
 }

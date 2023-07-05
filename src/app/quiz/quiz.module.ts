@@ -9,7 +9,7 @@ import { QuizPageRoutingModule } from './quiz-routing.module';
 import { QuizPage } from './quiz.page';
 
 import { NavComponent } from '../nav/nav.component';
-import { FooterPage } from '../footer/footer.page';
+import { FooterComponent } from '../footer/footer.component';
 
 @NgModule({
   imports: [
@@ -18,7 +18,7 @@ import { FooterPage } from '../footer/footer.page';
     IonicModule,
     QuizPageRoutingModule,
     NavComponent,
-    FooterPage
+    FooterComponent
   ],
   declarations: [QuizPage]
 })

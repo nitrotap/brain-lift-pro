@@ -9,7 +9,7 @@ import { SignupPageRoutingModule } from './signup-routing.module';
 import { SignupPage } from './signup.page';
 
 import { NavComponent } from '../nav/nav.component';
-import { FooterPage } from '../footer/footer.page';
+import { FooterComponent } from '../footer/footer.component';
 
 
 @NgModule({
@@ -19,7 +19,7 @@ import { FooterPage } from '../footer/footer.page';
     IonicModule,
     SignupPageRoutingModule,
     NavComponent,
-    FooterPage
+    FooterComponent
   ],
   declarations: [SignupPage]
 })

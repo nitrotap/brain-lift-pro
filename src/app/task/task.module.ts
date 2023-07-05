@@ -11,7 +11,7 @@ import { TaskPageRoutingModule } from './task-routing.module';
 
 import { TaskPage } from './task.page';
 import { NavComponent } from '../nav/nav.component';
-import { FooterPage } from '../footer/footer.page';
+import { FooterComponent } from '../footer/footer.component';
 
 
 @NgModule({
@@ -22,7 +22,7 @@ import { FooterPage } from '../footer/footer.page';
     IonicModule,
     TaskPageRoutingModule,
     NavComponent,
-    FooterPage
+    FooterComponent
   ],
   declarations: [TaskPage]
 })
